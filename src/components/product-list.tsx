@@ -8,11 +8,13 @@ import {
     TableRow
 } from "@/components/ui/table"
 import { Product } from '../App'
+import { Button } from "./ui/button"
 
 interface productListProps {
-    products: Product[]
+    products: Product[],
+    onDelete: (productId: string) => Promise<void>
 }
-const ProductList = ({ products = [] }: productListProps) => {
+const ProductList = ({ products = [], onDelete }: productListProps) => {
   return (
     <Table>
         <TableCaption>A list of your products</TableCaption>
@@ -31,6 +33,7 @@ const ProductList = ({ products = [] }: productListProps) => {
                     <TableCell>{product.name}</TableCell>
                     <TableCell>{product.amount}</TableCell>
                     <TableCell>${product.price.toFixed(2)}</TableCell>
+                    <Button onClick={() => onDelete(product.id)} variant="destructive">Delete</Button>
                 </TableRow>
             ))}
         </TableBody>

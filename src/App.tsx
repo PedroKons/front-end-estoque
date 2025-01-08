@@ -21,7 +21,7 @@ function App() {
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      const response =  await fetch("http://localhost:3333/products", {
+      const response =  await fetch("https://api-estoque-d5wc.onrender.com/products", {
         method: "GET"
       })
       
@@ -43,7 +43,7 @@ function App() {
   const insertProducts = async (newProduct : Product) => {
     setLoading(true)
     try {
-      const response = await fetch("http://localhost:3333/products", {
+      const response = await fetch("https://api-estoque-d5wc.onrender.com/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,41 +64,46 @@ function App() {
     }
   }
 
-  const updateProducts = async (updatedProduct : Product) => {
-    try {
-      const response =  await fetch(`http://localhost:3333/products/${updatedProduct.id}`,{
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedProduct)
-      })
-      if(!response.ok) {
-        throw new Error("Erro ao atualizar o produto")
-      }
-
-      const result = await response.json()
-      console.log("Produto atualizado: ", result)
-    } catch(err) {
-      console.error("Erro no update:", err)
-    }
-  }
+  // const updateProducts = async (updatedProduct: Product) => {
+  //   try {
+  //     const response = await fetch(`http://localhost:3333/products/${updatedProduct.id}`, {
+  //       method: "PATCH",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(updatedProduct)
+  //     })
+  //     if(!response.ok) {
+  //       throw new Error("Error updating product")
+  //     }
+      
+  //     await fetchProducts() // Add this line to refresh the list
+  //     return true
+      
+  //   } catch(err) {
+  //     console.error("Error updating:", err)
+  //     return false
+  //   }
+  // }
   
   const deleteProducts = async (productId: string) => {
     try {
-      const response = await fetch(`http://localhost:3333/products/${productId}`, {
+      const response = await fetch(`https://api-estoque-d5wc.onrender.com/products/${productId}`, {
         method: "DELETE",
       })
       if(!response.ok) {
-        throw new Error("Erro ao excluir o produto")
-        
+        throw new Error("Error deleting product")
       }
-      const result = await response.json()
-      console.log("Produto excluído:", result)
+      
+      await fetchProducts() // Add this line to refresh the list
+      return true
+      
     } catch (err) {
-      console.error("Erro no delete:", err)
+      console.error("Error deleting:", err)
+      return false
     }
   }
+  
 
   useEffect(() => {
     fetchProducts()
@@ -116,17 +121,25 @@ function App() {
         <TabsContent value="view">
           {isLoading && <p>Loading...</p>}
           {error && <p className="text-red-500">{error}</p>}
-          {!isLoading && !error && <ProductList products={products} />}
+          {!isLoading && !error && (
+            <ProductList 
+              products={products} 
+              onDelete={async (productId) => {
+                const success = await deleteProducts(productId);
+                if (success) {
+                  setProducts((prevProducts) => prevProducts.filter(product => product.id !== productId));
+                }
+              }}
+            />
+          )}
         </TabsContent>
         <TabsContent value="register">
           <ProductRegistration addProduct={insertProducts} />
         </TabsContent>
         <TabsContent value="update">
-          <ProductUpdate 
-            products={products}
-            onUpdateProduct={(products) => updateProducts(products)}
-            onDeleteProduct={(id) => deleteProducts(id)}
-          />
+        <ProductUpdate 
+          products={products}
+        />
         </TabsContent>
       </Tabs>
     </div>

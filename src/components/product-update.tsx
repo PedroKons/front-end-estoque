@@ -1,8 +1,8 @@
-import { Check, ChevronsUpDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/utils"
+import { Product } from '../App';
+
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -10,154 +10,83 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { useRef, useState, useEffect, FormEvent } from "react"
-import { Product } from '../App'
+} from "@/components/ui/popover";
+import { useState } from 'react';
 
 interface ProductUpdateProps {
-    products: Product[]
-    onUpdateProduct: (product: Product) => void
-    onDeleteProduct: (id: string) => void
+  products: Product[];
 }
 
+export function ProductUpdate({ products = [] }: ProductUpdateProps) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState<string>("");
 
-export function ProductUpdate({ products, onUpdateProduct, onDeleteProduct }: ProductUpdateProps) {
-  const [open, setOpen] = useState(false)
-  const [selectedProductId, setSelectedProductId] = useState("")
-  const [name, setName] = useState("")
-  const [amount, setAmount] = useState("")
-  const [price, setPrice] = useState("")
-  const buttonRef = useRef<HTMLButtonElement>(null)
+  // Busca o produto selecionado com base no ID
+  const selectedProduct = products.find((product) => product.id.toString() === value);
 
-  useEffect(() => {
-    const selectedProduct = products.find(p => p.id === selectedProductId)
-    if (selectedProduct) {
-        setName(selectedProduct.name)
-        setAmount(selectedProduct.amount.toString())
-        setPrice(selectedProduct.price.toString())
-    }
-  }, [selectedProductId, products])
+  console.log("Products array:", products);
+  console.log("Selected value (ID):", value);
+  console.log("Selected product:", selectedProduct);
 
-  const handleUpdate = (e: FormEvent) => {
-    e.preventDefault()
-    const selectedProduct = products.find(p => p.id === selectedProductId)
-    if (selectedProduct) {
-        onUpdateProduct({
-            ...selectedProduct,
-            name,
-            amount: parseInt(amount),
-            price: parseFloat(price)
-        })
-        resetForm()
-    }
-}
-const handleDelete = () => {
-    if(selectedProductId) {
-        onDeleteProduct(selectedProductId)
-        resetForm()
-    }
-
-}
-const resetForm = () => {
-    setSelectedProductId("")
-    setName("")
-    setAmount("")
-    setPrice("")
-}
   return (
     <div>
-        <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-            <Button
-            ref={buttonRef}
+          <Button
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="justify-between w-full"
-            >
-            {selectedProductId
-                ? products.find((product) => product.id === selectedProductId)?.name
-                : "Select framework..."}
-            <ChevronsUpDown className="opacity-50" />
-            </Button>
+            className="w-[200px] justify-between"
+          >
+            {selectedProduct ? selectedProduct.name : "Select a product..."}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
         </PopoverTrigger>
-        <PopoverContent  style={{
-            minWidth: buttonRef.current?.offsetWidth || "auto", // Sincroniza o tamanho do PopoverContent com o botão
-          }}>
-            <Command className="w-full">
-            <CommandInput placeholder="Search framework..." className="h-9" />
+        <PopoverContent className="w-[200px] p-0">
+          <Command>
+            <CommandInput placeholder="Search products..." />
             <CommandList>
-                <CommandEmpty>No framework found.</CommandEmpty>
-                <CommandGroup>
+              <CommandEmpty>No products found.</CommandEmpty>
+              <CommandGroup>
                 {products.map((product) => (
-                    <CommandItem
+                  <CommandItem
                     key={product.id}
-                    value={product.id}
+                    value={product.id.toString()} // Use o ID como valor
                     onSelect={(currentValue) => {
-                        setSelectedProductId(currentValue === selectedProductId ? "" : currentValue)
-                        setOpen(false)
+                      setValue(currentValue); // Atualiza o estado com o ID
+                      setOpen(false); // Fecha o popover
                     }}
-                    
-                    >
-                    {product.name}
+                  >
                     <Check
-                        className={cn(
-                        "ml-auto",
-                        selectedProductId === product.id ? "opacity-100" : "opacity-0"
-                        )}
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === product.id.toString() ? "opacity-100" : "opacity-0"
+                      )}
                     />
-                    </CommandItem>
+                    {product.name} {/* Mostra o nome do produto */}
+                  </CommandItem>
                 ))}
-                </CommandGroup>
+              </CommandGroup>
             </CommandList>
-            </Command>
+          </Command>
         </PopoverContent>
-        </Popover>
+      </Popover>
 
-        {selectedProductId && (
-            <form onSubmit={handleUpdate} className="space-y-4">
-                <div>
-                    <Label htmlFor="update-name">Product Name</Label>
-                    <Input
-                        id="update-name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <Label htmlFor="update-amount">Amount</Label>
-                    <Input
-                        id="update-amount"
-                        type="number"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <Label htmlFor="update-price">Price</Label>
-                    <Input
-                        id="update-price"
-                        type="number"
-                        step="0.01"
-                        value={price}
-                	    onChange={(e) => setPrice(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="space-x-2">
-            	    <Button type="submit">Update Product</Button>
-                    <Button type="button" variant="destructive" onClick={handleDelete}>Delete Product</Button>
-                </div>
-            </form>
-        )}
-
+      {/* Exibição dos dados do produto selecionado */}
+      {selectedProduct && (
+        <div className="mt-4 p-4 border rounded">
+          <h3>Product Details</h3>
+          <p><strong>ID:</strong> {selectedProduct.id}</p>
+          <p><strong>Name:</strong> {selectedProduct.name}</p>
+          <p><strong>Amount:</strong> {selectedProduct.amount}</p>
+          <p><strong>Price:</strong> {selectedProduct.price}</p>
+        </div>
+      )}
     </div>
-  )
+  );
 }
