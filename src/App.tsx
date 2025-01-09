@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ProductList from "./components/product-list";
+import Login from "./components/Login"
 import ProductRegistration from "./components/product-registration";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProductUpdate } from "./components/product-update";
@@ -16,6 +17,7 @@ function App() {
   const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [auth, setAuth] = useState(false)
 
   //Função para buscar produtos da API usando fetch
   const fetchProducts = async () => {
@@ -115,47 +117,77 @@ function App() {
     }
   }
   
+  const authenticateUser = async (email: string, password: string) => {
+    try {
+      const response = await fetch('http://localhost:3333/autenticacao', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Falha na autenticação');
+      }
+
+      const data = await response.json();
+      console.log('Login bem-sucedido:', data);
+
+      // Marca o usuário como autenticado
+      setAuth(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error('Erro ao autenticar o usuário:', err.message);
+      setError(err.message);
+    }
+  };
   useEffect(() => {
     fetchProducts()
   }, [])
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Stock Management System</h1>
-      <Tabs defaultValue='view'>
-        <TabsList className='grid w-full grid-cols-3'>
-          <TabsTrigger value="view">View Products</TabsTrigger>
-          <TabsTrigger value="register">Register Product</TabsTrigger>
-          <TabsTrigger value="update">Update/Delete Product</TabsTrigger>
-        </TabsList>
-        <TabsContent value="view">
-          {isLoading && <p>Loading...</p>}
-          {error && <p className="text-red-500">{error}</p>}
-          {!isLoading && !error && (
-            <ProductList 
-              products={products} 
-              onDelete={async (productId) => {
-                const success = await deleteProducts(productId);
-                if (success) {
-                  setProducts((prevProducts) => prevProducts.filter(product => product.id !== productId));
-                }
-              }}
-            />
-          )}
-        </TabsContent>
-        <TabsContent value="register">
-          <ProductRegistration addProduct={insertProducts} />
-        </TabsContent>
-        <TabsContent value="update">
-        <ProductUpdate 
-          products={products}
-          onUpdate={updateProducts}
-        />
-        </TabsContent>
-      </Tabs>
-    </div>
-  )
+    <>
+      {auth ? (
+        <div className="container mx-auto p-4">
+          <h1 className="text-2xl font-bold mb-4">Stock Management System</h1>
+          <Tabs defaultValue="view">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="view">View Products</TabsTrigger>
+              <TabsTrigger value="register">Register Product</TabsTrigger>
+              <TabsTrigger value="update">Update/Delete Product</TabsTrigger>
+            </TabsList>
+            <TabsContent value="view">
+              {isLoading && <p>Loading...</p>}
+              {error && <p className="text-red-500">{error}</p>}
+              {!isLoading && !error && (
+                <ProductList
+                  products={products}
+                  onDelete={async (productId) => {
+                    const success = await deleteProducts(productId);
+                    if (success) {
+                      setProducts((prevProducts) =>
+                        prevProducts.filter((product) => product.id !== productId)
+                      );
+                    }
+                  }}
+                />
+              )}
+            </TabsContent>
+            <TabsContent value="register">
+              <ProductRegistration addProduct={insertProducts} />
+            </TabsContent>
+            <TabsContent value="update">
+              <ProductUpdate products={products} onUpdate={updateProducts} />
+            </TabsContent>
+          </Tabs>
+        </div>
+      ) : (
+        <Login onLogin={authenticateUser} error={error}/>
+      )}
+    </>
+  );
 }
 
 export default App
