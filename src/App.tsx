@@ -64,27 +64,38 @@ function App() {
     }
   }
 
-  // const updateProducts = async (updatedProduct: Product) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:3333/products/${updatedProduct.id}`, {
-  //       method: "PATCH",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(updatedProduct)
-  //     })
-  //     if(!response.ok) {
-  //       throw new Error("Error updating product")
-  //     }
-      
-  //     await fetchProducts() // Add this line to refresh the list
-  //     return true
-      
-  //   } catch(err) {
-  //     console.error("Error updating:", err)
-  //     return false
-  //   }
-  // }
+  const updateProducts = async (updatedProduct: Product) => {
+    try {
+      const response = await fetch(`https://api-estoque-d5wc.onrender.com/products/${updatedProduct.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: updatedProduct.name,
+          amount: updatedProduct.amount,
+          price: updatedProduct.price,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Error updating product");
+      }
+  
+      // Atualiza o estado local
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === updatedProduct.id ? updatedProduct : product
+        )
+      );
+  
+      return true;
+    } catch (err) {
+      console.error("Error updating:", err);
+      return false;
+    }
+  };
+  
   
   const deleteProducts = async (productId: string) => {
     try {
@@ -139,6 +150,7 @@ function App() {
         <TabsContent value="update">
         <ProductUpdate 
           products={products}
+          onUpdate={updateProducts}
         />
         </TabsContent>
       </Tabs>
