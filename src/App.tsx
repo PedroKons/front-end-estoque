@@ -7,10 +7,19 @@ import { ProductUpdate } from "./components/product-update"
 import Cookies from "js-cookie"
 
 export interface Product {
-  id: string
-  name: string
-  amount: number
-  price: number
+  id: string;
+  name: string;
+  price: number;
+  amount: number;
+  coastprice: number;
+  lastpurchase: Date;
+  lastupdate: Date;
+  categories?: {
+    name: string;
+  };
+  supplier?: {
+    name: string;
+  };
 }
 
 function App() {
