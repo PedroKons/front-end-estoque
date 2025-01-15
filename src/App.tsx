@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import ProductList from "./components/product-list";
+import { useState, useEffect } from "react"
+import ProductList from "./components/product-list"
 import Login from "./components/Login"
-import ProductRegistration from "./components/product-registration";
+import ProductRegistration from "./components/product-registration"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ProductUpdate } from "./components/product-update";
+import { ProductUpdate } from "./components/product-update"
+import Cookies from "js-cookie"
 
 export interface Product {
   id: string
@@ -18,6 +19,14 @@ function App() {
   const [isLoading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [auth, setAuth] = useState(false)
+
+  useEffect(() => {
+    fetchProducts()
+
+    if (Cookies.get('auth') === 'true') {
+      setAuth(true);
+    }
+  }, []);
 
   //Função para buscar produtos da API usando fetch
   const fetchProducts = async () => {
@@ -119,7 +128,7 @@ function App() {
   
   const authenticateUser = async (email: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:3333/autenticacao', {
+      const response = await fetch('https://api-estoque-d5wc.onrender.com/autenticacao', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -136,6 +145,7 @@ function App() {
       console.log('Login bem-sucedido:', data);
 
       // Marca o usuário como autenticado
+      Cookies.set('auth', 'true', { expires: 1 });
       setAuth(true);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -143,9 +153,7 @@ function App() {
       setError(err.message);
     }
   };
-  useEffect(() => {
-    fetchProducts()
-  }, [])
+
 
   return (
     <>
