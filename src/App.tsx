@@ -165,9 +165,18 @@ function App() {
 
 
   return (
-    <>
+    <div
+      style={{
+        backgroundImage: `url('https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        height: "100vh", // Ajusta a altura para ocupar a tela inteira
+      }}
+      className="relative"    
+    >
       {auth ? (
-        <div className="container mx-auto p-4">
+        <div className="mx-auto px-12 pt-12 bg-white rounded-xl">
           <h1 className="text-2xl font-bold mb-4">Stock Management System</h1>
           <Tabs defaultValue="view">
             <TabsList className="grid w-full grid-cols-3">
@@ -203,7 +212,7 @@ function App() {
       ) : (
         <Login onLogin={authenticateUser} error={error}/>
       )}
-    </>
+    </div>
   );
 }
 
