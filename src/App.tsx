@@ -11,9 +11,9 @@ export interface Product {
   name: string;
   price: number;
   amount: number;
-  coastprice: number;
-  lastpurchase: Date;
-  lastupdate: Date;
+  coastprice?: number;
+  lastpurchase?: Date;
+  lastupdate?: Date;
   categories?: {
     name: string;
   };
