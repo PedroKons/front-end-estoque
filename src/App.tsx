@@ -5,6 +5,9 @@ import ProductRegistration from "./components/product-registration"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProductUpdate } from "./components/product-update"
 import Cookies from "js-cookie"
+// import "./global.css"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { AppSidebar } from "./components/app-sidebar"
 
 export interface Product {
   id: string;
@@ -163,57 +166,61 @@ function App() {
     }
   };
 
-
   return (
-    <div
-      style={{
-        backgroundImage: `url('https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        height: "100vh", // Ajusta a altura para ocupar a tela inteira
-      }}
-      className="relative"    
-    >
-      {auth ? (
-        <div className="mx-auto px-12 pt-12 bg-white rounded-xl">
-          <h1 className="text-2xl font-bold mb-4">Stock Management System</h1>
-          <Tabs defaultValue="view">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="view">View Products</TabsTrigger>
-              <TabsTrigger value="register">Register Product</TabsTrigger>
-              <TabsTrigger value="update">Update/Delete Product</TabsTrigger>
-            </TabsList>
-            <TabsContent value="view">
-              {isLoading && <p>Loading...</p>}
-              {error && <p className="text-red-500">{error}</p>}
-              {!isLoading && !error && (
-                <ProductList
-                  products={products}
-                  onDelete={async (productId) => {
-                    const success = await deleteProducts(productId);
-                    if (success) {
-                      setProducts((prevProducts) =>
-                        prevProducts.filter((product) => product.id !== productId)
-                      );
-                    }
-                  }}
-                />
-              )}
-            </TabsContent>
-            <TabsContent value="register">
-              <ProductRegistration addProduct={insertProducts} />
-            </TabsContent>
-            <TabsContent value="update">
-              <ProductUpdate products={products} onUpdate={updateProducts} />
-            </TabsContent>
-          </Tabs>
-        </div>
-      ) : (
-        <Login onLogin={authenticateUser} error={error}/>
-      )}
-    </div>
+    <>
+      <div
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          height: "100vh", // Ajusta a altura para ocupar a tela inteira
+        }}
+        className="relative"    
+      >
+        {auth ? (
+          <div className="mx-auto px-12 pt-12 bg-white rounded-xl">
+            <h1 className="text-2xl font-bold mb-4">Stock Management System</h1>
+            <Tabs defaultValue="view">
+              <SidebarProvider>
+                <AppSidebar />
+              </SidebarProvider>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="view">View Products</TabsTrigger>
+                <TabsTrigger value="register">Register Product</TabsTrigger>
+                <TabsTrigger value="update">Update/Delete Product</TabsTrigger>
+              </TabsList>
+              <TabsContent value="view">
+                {isLoading && <p>Loading...</p>}
+                {error && <p className="text-red-500">{error}</p>}
+                {!isLoading && !error && (
+                  <ProductList
+                    products={products}
+                    onDelete={async (productId) => {
+                      const success = await deleteProducts(productId);
+                      if (success) {
+                        setProducts((prevProducts) =>
+                          prevProducts.filter((product) => product.id !== productId)
+                        );
+                      }
+                    }}
+                  />
+                )}
+              </TabsContent>
+              <TabsContent value="register">
+                <ProductRegistration addProduct={insertProducts} />
+              </TabsContent>
+              <TabsContent value="update">
+                <ProductUpdate products={products} onUpdate={updateProducts} />
+              </TabsContent>
+            </Tabs>
+          </div>
+        ) : (
+          <Login onLogin={authenticateUser} error={error}/>
+        )}
+      </div>
+    </>
   );
 }
 
-export default App
+export default App 
