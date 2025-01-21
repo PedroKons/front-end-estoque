@@ -174,16 +174,13 @@ function App() {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          height: "100vh", // Ajusta a altura para ocupar a tela inteira
+          height: "auto", // Ajusta a altura para ocupar a tela inteira
         }}
         className="relative"    
       >
         {auth ? (
           <div className="mx-auto px-12 pt-12 bg-white rounded-xl">
             <h1 className="text-2xl font-bold mb-4">Stock Management System</h1>
-            <SidebarProvider>
-              <AppSidebar setActiveContent={setActiveContent}/>
-            </SidebarProvider>
               <div className="mt-4">
                 {activeContent === "view" && (
                   isLoading ? <p>Loading...</p> : 
@@ -217,6 +214,9 @@ function App() {
         ) : (
           <Login onLogin={authenticateUser} error={error}/>
         )}
+          <SidebarProvider>
+            <AppSidebar setActiveContent={setActiveContent}/>
+          </SidebarProvider>
       </div>
     </>
   );

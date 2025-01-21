@@ -52,13 +52,10 @@ export function AppSidebar({ setActiveContent }: AppSidebarProps) {
     setCollapsed((prev) => !prev);
   };
 
-
-
-
   return (
     <Sidebar className={`${collapsed ? "w-10" : "w-64"} bg-gray-800 text-black transition-all duration-300`}>
       <SidebarContent>
-        <div className="p-4 flex justify-end">
+        <div className="flex justify-end">
           <button
             onClick={toggleSidebar}
             className="text-gray-300 hover:text-white transition"
@@ -68,7 +65,7 @@ export function AppSidebar({ setActiveContent }: AppSidebarProps) {
         </div>
         <SidebarGroup>
           {!collapsed && (
-              <SidebarGroupLabel className="text-gray-300 px-4">Application</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-gray-300">Application</SidebarGroupLabel>
           )}
           <SidebarGroupContent>
             <SidebarMenu>
