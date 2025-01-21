@@ -2,10 +2,8 @@ import { useState, useEffect } from "react"
 import ProductList from "./components/product-list"
 import Login from "./components/Login"
 import ProductRegistration from "./components/product-registration"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProductUpdate } from "./components/product-update"
 import Cookies from "js-cookie"
-// import "./global.css"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "./components/app-sidebar"
 
@@ -31,6 +29,8 @@ function App() {
   const [isLoading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [auth, setAuth] = useState(false)
+  const [activeContent, setActiveContent] = useState("view");
+
 
   useEffect(() => {
     fetchProducts()
@@ -181,19 +181,13 @@ function App() {
         {auth ? (
           <div className="mx-auto px-12 pt-12 bg-white rounded-xl">
             <h1 className="text-2xl font-bold mb-4">Stock Management System</h1>
-            <Tabs defaultValue="view">
-              <SidebarProvider>
-                <AppSidebar />
-              </SidebarProvider>
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="view">View Products</TabsTrigger>
-                <TabsTrigger value="register">Register Product</TabsTrigger>
-                <TabsTrigger value="update">Update/Delete Product</TabsTrigger>
-              </TabsList>
-              <TabsContent value="view">
-                {isLoading && <p>Loading...</p>}
-                {error && <p className="text-red-500">{error}</p>}
-                {!isLoading && !error && (
+            <SidebarProvider>
+              <AppSidebar setActiveContent={setActiveContent}/>
+            </SidebarProvider>
+              <div className="mt-4">
+                {activeContent === "view" && (
+                  isLoading ? <p>Loading...</p> : 
+                  error ? <p className="text-red-500">{error}</p> : 
                   <ProductList
                     products={products}
                     onDelete={async (productId) => {
@@ -206,14 +200,19 @@ function App() {
                     }}
                   />
                 )}
-              </TabsContent>
-              <TabsContent value="register">
-                <ProductRegistration addProduct={insertProducts} />
-              </TabsContent>
-              <TabsContent value="update">
-                <ProductUpdate products={products} onUpdate={updateProducts} />
-              </TabsContent>
-            </Tabs>
+                {activeContent === "register" && (
+                  <ProductRegistration addProduct={insertProducts} />
+                )}
+                {activeContent === "update" && (
+                  <ProductUpdate products={products} onUpdate={updateProducts} />
+                )}
+                {activeContent === "search" && (
+                  <p>Função de busca será implementada futuramente.</p>
+                )}
+                {activeContent === "settings" && (
+                  <p>Configurações em breve.</p>
+                )}
+              </div>
           </div>
         ) : (
           <Login onLogin={authenticateUser} error={error}/>
