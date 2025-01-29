@@ -13,6 +13,11 @@ const ProductRegistration = ({addProduct}: ProductRegistrationProps) => {
     const [name, setName] = useState<string>("")
     const [amount, setAmount] = useState<string>("")
     const [price, setPrice] = useState<string>("")
+    const [coastPrice, setCoastPrice] = useState<string>("")
+    const [lastPurchase, setLastPurchase] = useState<Date>()
+    const [supplier, setSupplier] = useState<string>("")
+    const [lastUpdate, setLastUpdate] = useState<Date>()
+    const [categorie, setCategorie] = useState<string>("")
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -21,7 +26,18 @@ const ProductRegistration = ({addProduct}: ProductRegistrationProps) => {
             id,
             name,
             amount: parseFloat(amount),
-            price: parseFloat(price)
+            price: parseFloat(price),
+            coastprice: parseFloat(coastPrice),
+            lastpurchase: lastPurchase,
+            lastupdate : lastUpdate,
+            categories: {
+                name: categorie
+            },
+            supplier: {
+                name: supplier
+            }
+
+
         }
 
         addProduct(newProduct)
@@ -30,6 +46,9 @@ const ProductRegistration = ({addProduct}: ProductRegistrationProps) => {
         setName("");
         setAmount("");
         setPrice("");
+        setCoastPrice("");
+        setSupplier("");
+        setCategorie("");
     }
 
   return (
@@ -69,6 +88,36 @@ const ProductRegistration = ({addProduct}: ProductRegistrationProps) => {
                 onChange={(e) => setPrice(e.target.value)}
                 required
             />    
+        </div>
+        <div>
+            <label htmlFor="coastPrice">Coast Price</label>
+            <Input
+                id="coastPrice" // A planejar 
+            />
+        </div>
+        <div>
+            <label htmlFor="lastpurchase">Last Purchase</label>
+            <Input
+                id="lastpurchase"   // A planejar
+            />
+        </div>
+        <div>
+            <label htmlFor="idSupplier">Suppliers</label>
+            <Input
+                id="idSupplier"   // A planejar
+            />
+        </div>
+        <div>
+            <label htmlFor="lastUpdate">Last Update</label>
+            <Input
+                id="lastUpdate"   // A planejar
+            />
+        </div>
+        <div>
+            <label htmlFor="idCategorie">Categories</label>
+            <Input
+                id="idCategorie"   // A planejar
+            />
         </div>
         <Button type="submit">Add Product</Button>
     </form>
