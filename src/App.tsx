@@ -16,10 +16,12 @@ export interface Product {
   lastpurchase?: Date;
   lastupdate?: Date;
   categories?: {
-    name: string;
+    name: string,
+    id: number
   };
   supplier?: {
     name: string;
+    id: number;
   };
 }
 
